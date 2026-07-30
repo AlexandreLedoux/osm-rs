@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
-use map::{gui, object::storage::Storage, parse::parse, save};
+
+use map::{gui::gui, object::storage::Storage, parse::parse, save};
 
 #[derive(Parser)]
 #[command(name = "map")]
@@ -16,7 +17,7 @@ enum Commands {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cli = Cli::parse();
+    let cli: Cli = Cli::parse();
 
     match cli.command {
         Commands::Import => {
@@ -24,17 +25,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let storage: Storage = parse::parse()?;
 
+            // Sauvegarde uniquement par tuile
             for ((x, y), tile) in &storage.tiles {
-                save::save_tile(*x, *y, tile)?;
+                save::save_tile(*x, *y, &storage, tile)?;
             }
 
             println!("Import terminé");
         }
 
         Commands::Show => {
-            println!("Lancement GUI");
+            println!("Chargement du Storage...");
 
-            gui::run::run();
+            gui::main();
         }
     }
 

@@ -1,10 +1,10 @@
-use crate::{object::{storage::Storage, tile::Tile}, utils::utils::lat_lon_to_meters};
+use crate::object::{storage::Storage, tile::Tile};
 
-const TILE_SIZE_METERS: f64 = 1000.0;
+use serde::{Deserialize, Serialize};
 
-use serde::{Serialize, Deserialize};
+const TILE_SIZE_DEG: f64 = 0.009;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Node {
     id: i64,
     lat: f64,
@@ -13,11 +13,7 @@ pub struct Node {
 
 impl Node {
     pub fn new(id: i64, lat: f64, lon: f64) -> Node {
-        Node {
-            id: id,
-            lat: lat,
-            lon: lon,
-        }
+        Node { id, lat, lon }
     }
 
     pub fn id(&self) -> i64 {
@@ -34,22 +30,19 @@ impl Node {
 }
 
 pub fn add_node(storage: &mut Storage, osm_node: osmpbf::DenseNode) {
-    let (x, y) = lat_lon_to_meters(osm_node.lat(), osm_node.lon());
+    let node = Node::new(osm_node.id(), osm_node.lat(), osm_node.lon());
 
-    let id = osm_node.id();
+    storage.nodes.insert(osm_node.id(), node);
 
-    let node = Node::new(id, x, y);
+    // PAS de conversion mètres ici
 
-    // stockage global
-    storage.nodes.insert(id, node);
+    let tile_x = (osm_node.lat() / TILE_SIZE_DEG).floor() as i32;
 
-    // index spatial
-    let tile_x = (x / TILE_SIZE_METERS).floor() as i32;
-    let tile_y = (y / TILE_SIZE_METERS).floor() as i32;
+    let tile_y = (osm_node.lon() / TILE_SIZE_DEG).floor() as i32;
 
     storage
         .tiles
         .entry((tile_x, tile_y))
         .or_insert_with(Tile::new)
-        .add_node(id);
+        .add_node(osm_node.id());
 }
