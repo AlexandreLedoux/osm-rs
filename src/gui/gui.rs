@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::{
     load,
-    object::{node::Node, storage::Storage},
+    object::storage::Storage,
 };
 
 const TILE_SIZE_DEG: f64 = 0.009;
