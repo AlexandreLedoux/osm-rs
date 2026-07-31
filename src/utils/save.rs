@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-use crate::object::{node::Node, storage::Storage, tile::Tile, way::Way};
+use crate::common::render::storage::Storage;
 
-pub fn save_tile(
+pub fn save(
     tile_x: i32,
     tile_y: i32,
     storage: &Storage,
