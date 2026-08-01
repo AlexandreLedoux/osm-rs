@@ -1,3 +1,4 @@
+pub mod camera;
 pub mod import_node;
 pub mod import_storage;
 pub mod node;

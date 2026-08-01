@@ -15,24 +15,24 @@ enum Commands {
     Show,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[macroquad::main("OSM Renderer")]
+async fn main() {
     let cli: Cli = Cli::parse();
 
     match cli.command {
         Commands::Import => {
             println!("Import OSM...");
 
-            parse()?;
+            if let Err(e) = parse() {
+                eprintln!("Erreur import : {}", e);
+                return;
+            }
 
             println!("Import terminé");
         }
 
         Commands::Show => {
-            println!("Chargement du Storage...");
-
-            gui::main()?;
+            gui::run().await;
         }
     }
-
-    Ok(())
 }

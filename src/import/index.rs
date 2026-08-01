@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    common::{import_storage::ImportStorage, node::Node, tile::Tile, way::Way}, utils::{save, utils::coords_to_meter},
+    common::{import_storage::ImportStorage, node::Node, tile::Tile, way::Way}, utils::{save, utils::coords_to_tile},
 };
 
-const NB_ZOOM: u8 = 2;
+const NB_ZOOM: u8 = 16;
 
 pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn std::error::Error>> {
     // On utilise une HashMap pour accumuler les tiles par (zoom, x, y)
@@ -28,7 +28,7 @@ pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn s
                     import_storage
                         .nodes
                         .get(node_id)
-                        .map(|import_node| Node::from_import_node(import_node, zoom))
+                        .map(|import_node| Node::from_import_node(import_node))
                 })
                 .collect();
 
@@ -50,6 +50,8 @@ pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn s
         }
     }
 
+    println!("Tiles indexées: {}", tiles.len());
+
     // 4. Persistance des tiles dans l'arborescence de fichiers
     save::save(tiles)?;
 
@@ -65,7 +67,7 @@ pub fn get_way_tiles(way: &Way, zoom: u8, import_storage: &ImportStorage) -> Vec
         .iter()
         .filter_map(|node_id| {
             import_storage.nodes.get(node_id).map(|import_node| {
-                let (x, y) = coords_to_meter(import_node.lat(), import_node.lon(), zoom);
+                let (x, y) = coords_to_tile(import_node.lat(), import_node.lon(), zoom);
                 (x, y)
             })
         })

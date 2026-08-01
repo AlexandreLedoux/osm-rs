@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{common::import_node::ImportNode, utils::utils::coords_to_meter};
+use crate::{common::import_node::ImportNode, utils::utils::coords_to_webmercator};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Node {
     id: i64,
-    x: u32,
-    y: u32,
+    x: f32,
+    y: f32,
 }
 
 impl Node {
@@ -14,17 +14,21 @@ impl Node {
         self.id
     }
 
-    pub fn x(&self) -> u32 {
+    pub fn x(&self) -> f32 {
         self.x
     }
 
-    pub fn y(&self) -> u32 {
+    pub fn y(&self) -> f32 {
         self.y
     }
 
-    pub fn from_import_node(import_node: &ImportNode, zoom: u8) -> Node {
-        let (x, y) = coords_to_meter(import_node.lat(), import_node.lon(), zoom);
+    pub fn from_import_node(import_node: &ImportNode) -> Node {
+        let (x, y) = coords_to_webmercator(import_node.lat(), import_node.lon());
 
-        Node { id: import_node.id(), x, y }
+        Node {
+            id: import_node.id(),
+            x,
+            y,
+        }
     }
 }

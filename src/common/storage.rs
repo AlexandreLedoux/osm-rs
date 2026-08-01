@@ -19,14 +19,14 @@ impl Storage {
     }
 
     pub fn add_tile(&mut self, zoom: u8, x: u32, y: u32) -> Result<(), Box<dyn std::error::Error>> {
-        let tile: Tile = load_tile(zoom, x, y)?;
+        let mut tile: Tile = load_tile(zoom, x, y)?;
+        tile.rebuild_index();
         self.tiles.insert((zoom, x, y), tile);
         Ok(())
     }
 
     pub fn remove_tile(&mut self, zoom: u8, x: u32, y: u32) -> Result<(), Box<dyn std::error::Error>> {
         self.tiles.remove(&(zoom, x, y));
-
         Ok(())
     }
 }

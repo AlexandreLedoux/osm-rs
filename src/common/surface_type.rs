@@ -13,10 +13,10 @@ impl SurfaceType {
     pub fn min_zoom(&self) -> u8 {
         match self {
             SurfaceType::PrimaryRoad => 0,
-            SurfaceType::SecondaryRoad => 1,
-            SurfaceType::ResidentialRoad => 2,
-            SurfaceType::Park => 1,
-            SurfaceType::Building => 2,
+            SurfaceType::SecondaryRoad => 0,
+            SurfaceType::ResidentialRoad => 0,
+            SurfaceType::Park => 0,
+            SurfaceType::Building => 0,
         }
     }
 
