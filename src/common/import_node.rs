@@ -1,12 +1,12 @@
 use osmpbf::DenseNode;
 
-pub struct Node {
+pub struct ImportNode {
     id: i64,
     lat: f64,
     lon: f64,
 }
 
-impl Node {
+impl ImportNode {
     pub fn id(&self) -> i64 {
         self.id
     }
@@ -20,9 +20,9 @@ impl Node {
     }
 }
 
-impl From<DenseNode<'_>> for Node {
+impl From<DenseNode<'_>> for ImportNode {
     fn from(node: DenseNode) -> Self {
-        Node {
+        ImportNode {
             id: node.id(),
             lat: node.lat(),
             lon: node.lon(),

@@ -1,42 +1,17 @@
-use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
+use std::{collections::HashMap, fs::File, io::Write};
 
-use crate::common::render::storage::Storage;
+use crate::common::tile::Tile;
 
-pub fn save(
-    tile_x: i32,
-    tile_y: i32,
-    storage: &Storage,
-    tile: &Tile,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let dir: String = format!("data/tiles/{}_{}", tile_x, tile_y);
+pub fn save(tiles: HashMap<(u8, u32, u32), Tile>) -> Result<(), Box<dyn std::error::Error>> {
+    for ((zoom, x, y), tile) in tiles {
+        let path: String = format!("data/{}/{}/{}/tile", zoom, x, y);
 
-    fs::create_dir_all(&dir)?;
+        std::fs::create_dir_all(format!("data/{}/{}/{}", zoom, x, y))?;
+        let mut file: File = File::create(path)?;
+        let data: Vec<u8> = bincode::serialize(&tile).unwrap();
 
-    let nodes_path: std::path::PathBuf = Path::new(&dir).join("nodes.bin");
-
-    let ways_path: std::path::PathBuf = Path::new(&dir).join("ways.bin");
-
-    let mut nodes: HashMap<i64, Node> = HashMap::new();
-
-    for id in tile.nodes() {
-        if let Some(node) = storage.nodes.get(id) {
-            nodes.insert(*id, node.clone());
-        }
+        file.write_all(&data)?;
     }
-
-    let mut ways: HashMap<i64, Way> = HashMap::new();
-
-    for id in tile.ways() {
-        if let Some(way) = storage.ways.get(id) {
-            ways.insert(*id, way.clone());
-        }
-    }
-
-    fs::write(nodes_path, bincode::serialize(&nodes)?)?;
-
-    fs::write(ways_path, bincode::serialize(&ways)?)?;
 
     Ok(())
 }

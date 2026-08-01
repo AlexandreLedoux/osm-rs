@@ -1,11 +1,13 @@
 use osmpbf::{Element, ElementReader};
 
-use crate::{common::import::{import_storage::ImportStorage, tile_index::TileIndex}, parse::index::index};
+use crate::{common::import_storage::ImportStorage, import::index::index_and_persist};
 
 pub fn parse() -> Result<(), Box<dyn std::error::Error>> {
+    println!("OSM to common");
     let import_storage: ImportStorage = create_import_storage()?;
-    let tile_index: TileIndex = index(&import_storage);
-    tile_index.save("./tiles");
+
+    println!("Index and index_and_persist");
+    index_and_persist(&import_storage);
 
     Ok(())
 }

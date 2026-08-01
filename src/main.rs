@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
-
-use map::{gui::gui, object::storage::Storage, parse::parse, save};
+use map::{gui::gui, import::parse::parse};
 
 #[derive(Parser)]
 #[command(name = "map")]
@@ -23,12 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Import => {
             println!("Import OSM...");
 
-            let storage: Storage = parse::parse()?;
-
-            // Sauvegarde uniquement par tuile
-            for ((x, y), tile) in &storage.tiles {
-                save::save_tile(*x, *y, &storage, tile)?;
-            }
+            parse()?;
 
             println!("Import terminé");
         }
@@ -36,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Show => {
             println!("Chargement du Storage...");
 
-            gui::main();
+            gui::main()?;
         }
     }
 

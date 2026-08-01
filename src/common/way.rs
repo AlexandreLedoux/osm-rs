@@ -1,7 +1,9 @@
 use osmpbf::Way as OsmWay;
+use serde::{Deserialize, Serialize};
 
-use crate::common::{import::{bbox::BBox, import_storage::ImportStorage, tag::Tag}, render::surface_type::SurfaceType};
+use crate::common::{surface_type::SurfaceType, tag::Tag};
 
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Way {
     id: i64,
     node_ids: Vec<i64>,
@@ -49,18 +51,6 @@ impl Way {
         }
 
         None
-    }
-
-    pub fn bbox(&self, storage: &ImportStorage) -> BBox {
-        let mut bbox = BBox::empty();
-
-        for node_id in &self.node_ids {
-            let node = storage.nodes.get(node_id).unwrap();
-
-            bbox.expand(node.lat(), node.lon());
-        }
-
-        bbox
     }
 }
 

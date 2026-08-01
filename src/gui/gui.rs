@@ -1,8 +1,10 @@
-use macroquad::prelude::*;
+use crate::common::storage::Storage;
 
-use crate::common::render::storage::Storage;
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut storage: Storage = Storage::new();
+    storage.add_tile(0, 0, 0)?;
 
-#[macroquad::main("Map")]
-pub async fn main() {
-    let mut render_storage: Storage = Storage::new();
+    println!("Ways dans la tuile : {}", storage.tiles().len());
+
+    Ok(())
 }

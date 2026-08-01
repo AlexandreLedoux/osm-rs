@@ -2,10 +2,10 @@ use std::collections::HashMap;
 
 use osmpbf::{DenseNode as OsmNode, Relation as OsmRelation, Way as OsmWay};
 
-use crate::common::import::{node::Node, relation::Relation, way::Way};
+use crate::common::{import_node::ImportNode, relation::Relation, way::Way};
 
 pub struct ImportStorage {
-    pub nodes: HashMap<i64, Node>,
+    pub nodes: HashMap<i64, ImportNode>,
     pub ways: HashMap<i64, Way>,
     pub relations: HashMap<i64, Relation>,
 }
@@ -20,7 +20,7 @@ impl ImportStorage {
     }
 
     pub fn add_node(&mut self, osm_node: OsmNode) {
-        self.nodes.insert(osm_node.id(), Node::from(osm_node));
+        self.nodes.insert(osm_node.id(), ImportNode::from(osm_node));
     }
 
     pub fn add_way(&mut self, osm_way: OsmWay) {
