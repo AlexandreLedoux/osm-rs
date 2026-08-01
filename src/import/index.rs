@@ -36,14 +36,14 @@ pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn s
             for (x, y) in covered_tiles {
                 let entry = tiles
                     .entry((zoom, x, y))
-                    .or_insert_with(|| Tile::new(0, Vec::new(), Vec::new()));
+                    .or_insert_with(|| Tile::new(zoom, x, y, 0, Vec::new(), Vec::new()));
                 // On évite les doublons de ways et de nodes
-                if !entry.ways.iter().any(|w| w.id() == way.id()) {
-                    entry.ways.push(way.clone());
+                if !entry.ways().iter().any(|w| w.id() == way.id()) {
+                    entry.add_way(way.clone());
                 }
                 for node in &nodes {
-                    if !entry.nodes.iter().any(|n| n.id() == node.id()) {
-                        entry.nodes.push(node.clone());
+                    if !entry.nodes().iter().any(|n| n.id() == node.id()) {
+                        entry.add_node(node.clone());
                     }
                 }
             }

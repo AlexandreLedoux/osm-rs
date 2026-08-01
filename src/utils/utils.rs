@@ -22,3 +22,13 @@ pub fn coords_to_webmercator(lat: f64, lon: f64) -> (f32, f32) {
 
     (x as f32, y as f32)
 }
+
+pub fn webmercator_to_coords(x: f32, y: f32) -> (f64, f64) {
+    const R: f64 = 6378137.0;
+
+    let lon = x as f64 / R;
+
+    let lat = 2.0 * ((y as f64 / R).exp()).atan() - std::f64::consts::PI / 2.0;
+
+    (lat.to_degrees(), lon.to_degrees())
+}

@@ -25,8 +25,24 @@ impl Storage {
         Ok(())
     }
 
-    pub fn remove_tile(&mut self, zoom: u8, x: u32, y: u32) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn remove_tile(
+        &mut self,
+        zoom: u8,
+        x: u32,
+        y: u32,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         self.tiles.remove(&(zoom, x, y));
         Ok(())
+    }
+
+    pub fn contains(&self, zoom: u8, x: u32, y: u32) -> bool {
+        self.tiles.contains_key(&(zoom, x, y))
+    }
+
+    pub fn retain_tiles<F>(&mut self, mut predicate: F)
+    where
+        F: FnMut(&Tile) -> bool,
+    {
+        self.tiles.retain(|_, tile| predicate(tile));
     }
 }
