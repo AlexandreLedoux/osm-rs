@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::common::{surface_type::SurfaceType, tag::Tag};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Way {
     id: i64,
     node_ids: Vec<i64>,

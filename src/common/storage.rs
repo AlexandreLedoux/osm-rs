@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::{common::tile::Tile, utils::load::load_tile};
 
+#[derive(Debug)]
 pub struct Storage {
     tiles: HashMap<(u8, u32, u32), Tile>,
 }

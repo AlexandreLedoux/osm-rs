@@ -7,7 +7,7 @@ pub fn parse() -> Result<(), Box<dyn std::error::Error>> {
     let import_storage: ImportStorage = create_import_storage()?;
 
     println!("Index and index_and_persist");
-    index_and_persist(&import_storage);
+    index_and_persist(&import_storage)?;
 
     Ok(())
 }

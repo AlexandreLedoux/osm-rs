@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::common::{node::Node, way::Way};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Tile {
     id: u64,
     pub nodes: Vec<Node>,

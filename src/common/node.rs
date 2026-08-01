@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{common::import_node::ImportNode, utils::utils::coords_to_meter};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Node {
     id: i64,
     x: u32,
