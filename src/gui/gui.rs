@@ -1,24 +1,23 @@
 use macroquad::prelude::*;
 
 use crate::{
-    common::{camera::Camera, storage::Storage, tile::Tile},
+    common::{camera::Camera, storage::Storage, tile::Tile, way::Way},
     utils::utils::{coords_to_tile, coords_to_webmercator, webmercator_to_coords},
 };
 
 pub async fn run() {
     println!("Chargement du Storage...");
 
-    let lat = 48.864118;
-    let lon = 2.325493;
+    let lat: f64 = 48.864118;
+    let lon: f64 = 2.325493;
 
-    let osm_zoom: u8 = 14;
+    let osm_zoom: u8 = 13;
 
-    // GPS -> WebMercator
     let (world_x, world_y) = coords_to_webmercator(lat, lon);
 
-    let scale = 5.0 * 2f32.powi(osm_zoom as i32 - 16);
+    let scale: f32 = 5.0 * 2f32.powi(osm_zoom as i32 - 16);
 
-    let mut camera = Camera {
+    let mut camera: Camera = Camera {
         x: 0.0,
         y: 0.0,
         scale,
@@ -26,28 +25,20 @@ pub async fn run() {
 
     camera.center_on(world_x, world_y);
 
-    let mut storage = Storage::new();
+    let mut storage: Storage = Storage::new();
 
     update_tiles(&mut storage, &camera, osm_zoom);
 
     loop {
         clear_background(BLACK);
 
-        /*
-            Déplacement souris
-        */
-
         if is_mouse_button_down(MouseButton::Left) {
-            let delta = mouse_delta_position();
+            let delta: Vec2 = mouse_delta_position();
 
             camera.pan(delta.x, delta.y, osm_zoom);
 
             update_tiles(&mut storage, &camera, osm_zoom);
         }
-
-        /*
-            Affichage
-        */
 
         for tile in storage.tiles().values() {
             draw_tile(tile, &camera);
@@ -61,34 +52,45 @@ pub async fn run() {
 
 fn draw_tile(tile: &Tile, camera: &Camera) {
     for way in tile.ways() {
-        for node_pair in way.node_ids().windows(2) {
-            let Some(a) = tile.node(node_pair[0]) else {
-                continue;
-            };
+        let Some(surface) = way.surface_type() else {
+            continue;
+        };
 
-            let Some(b) = tile.node(node_pair[1]) else {
-                continue;
-            };
-
-            let (ax, ay) = camera.world_to_screen(a.x(), a.y());
-
-            let (bx, by) = camera.world_to_screen(b.x(), b.y());
-
-            draw_line(ax, ay, bx, by, 2.0, WHITE);
+        if surface.is_polygon() {
+            draw_polygon(tile, way, camera, surface.color());
+        } else {
+            draw_line_way(tile, way, camera, surface.color());
         }
     }
 }
 
+fn draw_line_way(tile: &Tile, way: &Way, camera: &Camera, color: Color) {
+    for node_pair in way.node_ids().windows(2) {
+        let Some(a) = tile.node(node_pair[0]) else {
+            continue;
+        };
+
+        let Some(b) = tile.node(node_pair[1]) else {
+            continue;
+        };
+
+        let (ax, ay) = camera.world_to_screen(a.x(), a.y());
+        let (bx, by) = camera.world_to_screen(b.x(), b.y());
+
+        draw_line(ax, ay, bx, by, 2.0, color);
+    }
+}
+
 fn draw_tile_border(tile: &Tile, camera: &Camera) {
-    let world_size = 40075016.686 / 2f32.powi(tile.zoom() as i32);
+    let world_size: f32 = 40075016.686 / 2f32.powi(tile.zoom() as i32);
 
-    let min_x = tile.x() as f32 * world_size - 20037508.343;
+    let min_x: f32 = tile.x() as f32 * world_size - 20037508.343;
 
-    let max_x = min_x + world_size;
+    let max_x: f32 = min_x + world_size;
 
-    let max_y = 20037508.343 - tile.y() as f32 * world_size;
+    let max_y: f32 = 20037508.343 - tile.y() as f32 * world_size;
 
-    let min_y = max_y - world_size;
+    let min_y: f32 = max_y - world_size;
 
     let (x1, y1) = camera.world_to_screen(min_x, min_y);
 
@@ -104,23 +106,19 @@ fn update_tiles(storage: &mut Storage, camera: &Camera, zoom: u8) {
 
     let (center_x, center_y) = coords_to_tile(lat, lon, zoom);
 
-    let mut needed = Vec::new();
-
-    /*
-        Chargement carré 3x3
-    */
+    let mut needed: Vec<(u8, u32, u32)> = Vec::new();
 
     for dx in -1i32..=1 {
         for dy in -1i32..=1 {
-            let x = center_x as i32 + dx;
+            let x: i32 = center_x as i32 + dx;
 
-            let y = center_y as i32 + dy;
+            let y: i32 = center_y as i32 + dy;
 
             if x < 0 || y < 0 {
                 continue;
             }
 
-            let key = (zoom, x as u32, y as u32);
+            let key: (u8, u32, u32) = (zoom, x as u32, y as u32);
 
             needed.push(key);
 
@@ -134,9 +132,25 @@ fn update_tiles(storage: &mut Storage, camera: &Camera, zoom: u8) {
         }
     }
 
-    /*
-        Suppression tiles trop loin
-    */
-
     storage.retain_tiles(|tile| needed.contains(&(tile.zoom(), tile.x(), tile.y())));
+}
+
+fn draw_polygon(tile: &Tile, way: &Way, camera: &Camera, color: Color) {
+    let points: Vec<Vec2> = way
+        .node_ids()
+        .iter()
+        .filter_map(|id| tile.node(*id))
+        .map(|node| {
+            let (x, y) = camera.world_to_screen(node.x(), node.y());
+            vec2(x, y)
+        })
+        .collect();
+
+    if points.len() < 3 {
+        return;
+    }
+
+    for i in 1..points.len() - 1 {
+        draw_triangle(points[0], points[i], points[i + 1], color);
+    }
 }

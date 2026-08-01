@@ -46,6 +46,18 @@ impl Way {
                     return Some(SurfaceType::Building);
                 }
 
+                ("natural", "water") => {
+                    return Some(SurfaceType::Water);
+                }
+
+                ("water", "river") => {
+                    return Some(SurfaceType::Water);
+                }
+
+                ("waterway", "riverbank") => {
+                    return Some(SurfaceType::Water);
+                }
+
                 _ => {}
             }
         }
