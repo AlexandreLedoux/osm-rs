@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use map::{gui::gui, import::parse::parse};
+use map::{gui::gui, import::{parse::parse, test::test_index}};
 
 #[derive(Parser)]
 #[command(name = "map")]
@@ -13,6 +13,7 @@ struct Cli {
 enum Commands {
     Import,
     Show,
+    Test,
 }
 
 #[macroquad::main("OSM Renderer")]
@@ -20,6 +21,17 @@ async fn main() {
     let cli: Cli = Cli::parse();
 
     match cli.command {
+        Commands::Test => {
+            println!("Import OSM...");
+
+            if let Err(e) = test_index() {
+                eprintln!("Erreur import : {}", e);
+                return;
+            }
+
+            println!("Import terminé");
+        }
+
         Commands::Import => {
             println!("Import OSM...");
 

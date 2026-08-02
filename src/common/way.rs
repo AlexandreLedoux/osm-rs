@@ -1,13 +1,16 @@
 use osmpbf::Way as OsmWay;
 use serde::{Deserialize, Serialize};
 
-use crate::common::{surface_type::SurfaceType, tag::Tag};
+use crate::common::{map_object::MapObject, surface_type::SurfaceType, tag::Tag};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Way {
     id: i64,
     node_ids: Vec<i64>,
     tags: Vec<Tag>,
+
+    #[serde(skip)]
+    map_object: Option<MapObject>,
 }
 
 impl Way {
@@ -21,6 +24,10 @@ impl Way {
 
     pub fn tags(&self) -> &[Tag] {
         &self.tags
+    }
+
+    pub fn map_object(&self) -> Option<&MapObject> {
+        self.map_object.as_ref()
     }
 
     pub fn surface_type(&self) -> Option<SurfaceType> {
@@ -75,6 +82,7 @@ impl From<OsmWay<'_>> for Way {
                 .tags()
                 .map(|(key, value)| Tag::new(key, value))
                 .collect(),
+            map_object: None,
         }
     }
 }

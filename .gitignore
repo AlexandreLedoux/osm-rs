@@ -20,5 +20,7 @@ target
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Data
 data
-ile-de-france-260729.osm.pbf
+nodes.redb
+idf.pbf

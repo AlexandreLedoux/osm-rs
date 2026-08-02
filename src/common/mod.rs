@@ -1,6 +1,7 @@
 pub mod camera;
 pub mod import_node;
 pub mod import_storage;
+pub mod map_object;
 pub mod node;
 pub mod relation;
 pub mod storage;
