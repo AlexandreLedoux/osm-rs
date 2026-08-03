@@ -73,8 +73,8 @@ impl Way {
     }
 }
 
-impl From<OsmWay<'_>> for Way {
-    fn from(way: OsmWay) -> Self {
+impl From<&OsmWay<'_>> for Way {
+    fn from(way: &OsmWay) -> Self {
         Way {
             id: way.id(),
             node_ids: way.refs().collect(),

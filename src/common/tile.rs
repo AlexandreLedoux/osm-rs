@@ -10,7 +10,6 @@ pub struct Tile {
     x: u32,
     y: u32,
 
-    id: u64,
     nodes: Vec<Node>,
     ways: Vec<Way>,
 
@@ -31,10 +30,6 @@ impl Tile {
         self.y
     }
 
-    pub fn id(&self) -> u64 {
-        self.id
-    }
-
     pub fn nodes(&self) -> &[Node] {
         &self.nodes
     }
@@ -51,7 +46,7 @@ impl Tile {
         self.nodes.push(node);
     }
 
-    pub fn new(zoom: u8, x: u32, y: u32, id: u64, nodes: Vec<Node>, ways: Vec<Way>) -> Tile {
+    pub fn new(zoom: u8, x: u32, y: u32, nodes: Vec<Node>, ways: Vec<Way>) -> Tile {
         let node_index: HashMap<i64, usize> = nodes
             .iter()
             .enumerate()
@@ -62,7 +57,6 @@ impl Tile {
             zoom,
             x,
             y,
-            id,
             nodes,
             ways,
             node_index,

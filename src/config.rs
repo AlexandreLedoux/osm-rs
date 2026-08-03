@@ -1,0 +1,1 @@
+pub const ZOOM: u8 = 16;

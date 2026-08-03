@@ -1,10 +1,21 @@
 use crate::common::tile::Tile;
+use std::error::Error;
 
+/*
 pub fn load_tile(zoom: u8, x: u32, y: u32) -> Result<Tile, Box<dyn std::error::Error>> {
     let path: String = format!("data/{}/{}/{}/tile", zoom, x, y);
 
     let bytes: Vec<u8> = std::fs::read(path)?;
 
+    let tile: Tile = bincode::deserialize(&bytes)?;
+
+    Ok(tile)
+}
+    */
+
+pub fn load_tile(zoom: u8, x: u32, y: u32) -> Result<Tile, Box<dyn Error>> {
+    let path: String = format!("data/{}/{}/{}/tile", zoom, x, y);
+    let bytes: Vec<u8> = std::fs::read(path)?;
     let tile: Tile = bincode::deserialize(&bytes)?;
 
     Ok(tile)

@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    common::{import_storage::ImportStorage, node::Node, tile::Tile, way::Way}, utils::{save, utils::coords_to_tile},
+    common::{import_storage::ImportStorage, node::Node, tile::Tile, way::Way}, config::ZOOM, utils::{save, utils::coords_to_tile},
 };
-
-const NB_ZOOM: u8 = 16;
 
 pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn std::error::Error>> {
     // On utilise une HashMap pour accumuler les tiles par (zoom, x, y)
@@ -16,7 +14,7 @@ pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn s
         };
 
         // Pour chaque zoom pertinent pour ce surface_type
-        for zoom in surface_type.min_zoom()..=NB_ZOOM {
+        for zoom in surface_type.min_zoom()..=ZOOM {
             // 1. On calcule les tiles (x, y) couvertes par ce way à ce zoom
             let covered_tiles = get_way_tiles(way, zoom, import_storage);
 
@@ -36,7 +34,7 @@ pub fn index_and_persist(import_storage: &ImportStorage) -> Result<(), Box<dyn s
             for (x, y) in covered_tiles {
                 let entry = tiles
                     .entry((zoom, x, y))
-                    .or_insert_with(|| Tile::new(zoom, x, y, 0, Vec::new(), Vec::new()));
+                    .or_insert_with(|| Tile::new(zoom, x, y, Vec::new(), Vec::new()));
                 // On évite les doublons de ways et de nodes
                 if !entry.ways().iter().any(|w| w.id() == way.id()) {
                     entry.add_way(way.clone());

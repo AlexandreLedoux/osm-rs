@@ -24,7 +24,7 @@ impl ImportStorage {
     }
 
     pub fn add_way(&mut self, osm_way: OsmWay) {
-        self.ways.insert(osm_way.id(), Way::from(osm_way));
+        self.ways.insert(osm_way.id(), Way::from(&osm_way));
     }
 
     pub fn add_relation(&mut self, osm_relation: OsmRelation) {

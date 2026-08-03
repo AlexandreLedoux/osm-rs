@@ -23,4 +23,6 @@ target
 # Data
 data
 nodes.redb
-idf.pbf
+
+*.pbf
+!paris.pbf
