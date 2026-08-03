@@ -5,7 +5,8 @@ use crate::{
     utils::utils::{coords_to_tile, coords_to_webmercator, webmercator_to_coords},
 };
 
-pub async fn run() {
+#[macroquad::main("OSM Renderer")]
+pub async fn main() {
     println!("Chargement du Storage...");
 
     let lat: f64 = 48.864118;

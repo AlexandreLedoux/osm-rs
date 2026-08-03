@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use map::{gui::gui, import::{parse::parse, test::test_index}};
+use map::{common::index_step::IndexStep, gui::gui, index::index::index, parse};
 
 #[derive(Parser)]
 #[command(name = "map")]
@@ -13,38 +13,41 @@ struct Cli {
 enum Commands {
     Import,
     Show,
-    Test,
+    Index {
+        filename: String,
+
+        #[arg(short, long)]
+        step: IndexStep,
+
+        #[clap(short, long, default_value = None)]
+        zoom: Option<u8>,
+    },
 }
 
-#[macroquad::main("OSM Renderer")]
-async fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli: Cli = Cli::parse();
 
     match cli.command {
-        Commands::Test => {
-            println!("Import OSM...");
+        Commands::Index { filename, step, zoom } => {
+            println!("Indexing: {}", filename);
 
-            if let Err(e) = test_index() {
-                eprintln!("Erreur import : {}", e);
-                return;
-            }
+            index(filename, step, zoom)?;
 
-            println!("Import terminé");
+            println!("Indexing finished");
         }
 
         Commands::Import => {
             println!("Import OSM...");
 
-            if let Err(e) = parse() {
-                eprintln!("Erreur import : {}", e);
-                return;
-            }
+            parse::parse()?;
 
             println!("Import terminé");
         }
 
         Commands::Show => {
-            gui::run().await;
+            gui::main();
         }
     }
+
+    Ok(())
 }

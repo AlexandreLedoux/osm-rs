@@ -1,6 +1,6 @@
 use osmpbf::{Element, ElementReader};
 
-use crate::{common::import_storage::ImportStorage, import::index::index_and_persist};
+use crate::{common::import_storage::ImportStorage, parse_index::index_and_persist};
 
 pub fn parse() -> Result<(), Box<dyn std::error::Error>> {
     println!("OSM to common");
@@ -13,7 +13,7 @@ pub fn parse() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn create_import_storage() -> Result<ImportStorage, Box<dyn std::error::Error>> {
-    let path: &str = "paris_centre.pbf";
+    let path: &str = "paris.pbf";
 
     let mut import_storage: ImportStorage = ImportStorage::new();
 
